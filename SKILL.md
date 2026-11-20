@@ -1,11 +1,11 @@
 ---
 name: web-ui-sourcebook
-description: Use when building or changing web UI - landing page, hero, pricing table, dashboard, form, modal, toast, loader, button, animation, micro-interaction, color palette, typography, spacing, or a "make it feel alive / premium / not templated" brief. A sourcebook of seven vetted open-source libraries (EasyUI, Refero DESIGN.md, Piixpal, Stick It Up, Bencho, Amicro, Designeer) for finding existing components, motion and design direction instead of hand-rolling them. Triggers on "component library", "micro-interaction", "animation", "motion", "hero section", "stickers", "pixel art", "design system", "DESIGN.md", "landing page", "animated", "polish", "delight".
+description: Use when building or changing web UI - landing page, hero, pricing table, dashboard, form, modal, toast, loader, button, animation, micro-interaction, color palette, typography, spacing, or a "make it feel alive / premium / not templated" brief. A sourcebook of eight vetted open-source catalogues and libraries (EasyUI, Refero DESIGN.md, Piixpal, Stick It Up, Bencho, Amicro, Designeer, Cesaro Resources) for finding existing components, motion and design direction instead of hand-rolling them. Triggers on "component library", "micro-interaction", "animation", "motion", "hero section", "stickers", "pixel art", "design system", "DESIGN.md", "landing page", "animated", "polish", "delight".
 ---
 
 # Web UI Sourcebook
 
-Seven sources cover almost every web UI need. This skill is the routing layer over them, plus the five gates that get skipped.
+Eight sources cover almost every web UI need. This skill is the routing layer over them, plus the five gates that get skipped.
 
 **Core principle: copy before you build. Borrow the direction before you pick the palette. Every visual decision has a source; every animation has a budget.**
 
@@ -22,8 +22,9 @@ The failure mode this exists to prevent: an agent writes its own accordion, inve
 | A brand moment: sticker on a hero, empty state, 404, card corner | **Stick It Up** | 65 hand-drawn SVG stickers with 3D peel physics, npm |
 | Colors, type scale, spacing, radius, do/don't from a real product | **Refero Styles** | 2000+ generated DESIGN.md, ready to paste as CSS vars |
 | Where to find other tools, fonts, galleries, icons, portfolios | **Designeer** | 693 curated listings, every page has a `.md` twin |
+| Agent skills, design systems, audio, metrics, infra, or a 2nd opinion on free tools | **Cesaro Resources** | 67 free/freemium picks across 18 categories, incl. the gaps Designeer leaves |
 
-Two sources answer "what does this look like" (Refero, Designeer). Five answer "what do I ship" (the rest). Use them in that order - direction, then implementation.
+Two sources answer "what does this look like" (Refero, Designeer). Two are indexes of other things (Designeer, Cesaro). Four answer "what do I ship" (the rest). Use them in that order - direction, then implementation.
 
 ## Fetch machine-readable content first
 
@@ -40,6 +41,7 @@ Never scrape rendered HTML when a machine-readable endpoint exists. These are al
 | Stick It Up | `https://stickitupx.com/llms.txt` | Install, props, all 65 sticker names |
 | Designeer | `https://designeer.xyz/llms.txt` | All 693 listings |
 | Designeer | `https://designeer.xyz/{collection}.md` | One collection per file: `inspiration`, `resources`, `tools`, `portfolios` |
+| Cesaro Resources | `https://resources.cesaroeduardo.com/` | No `llms.txt` or `.md` - parse the HTML, badge is in the anchor text |
 | Any shadcn registry | `.../registry.json` | Machine-readable component list |
 
 Designeer additionally returns markdown for any page when you send `Accept: text/markdown`, and every page has a `.md` twin at its address (`/resources.md`, `/tools/monospace.md`, ...). Prefer those over the HTML.
@@ -56,7 +58,7 @@ const md = html
 
 Get the uuid from the grid at `styles.refero.design` (the search box filters by brand, style, color, font, or category) or from `styles.refero.design/ai-agents/design-md-examples`. Each extracted DESIGN.md is 17-26 KB.
 
-## The seven sources
+## The eight sources
 
 ### EasyUI - `easyui.site`
 React + Tailwind + Framer Motion. 134 components. Copy-paste ownership, zero configuration.
@@ -190,6 +192,45 @@ A hand-reviewed catalogue: 693 listings in four collections plus 180 Finds (visu
 
 Use it for: finding the *other* tool. Designeer points at things - then you install the thing it points at. It is not a component library.
 
+### Cesaro Resources - `resources.cesaroeduardo.com`
+"Design Engineer Resources" by Eduardo de Cesaro. 77 curated entries in 18 categories, each labelled Free / Freemium / Paid. Hand-picked, inspired by designengineer.tools. **No `llms.txt`, no `.md`** - parse the page; the licence badge is the last word of each anchor's text.
+
+```js
+const h = await (await fetch("https://resources.cesaroeduardo.com/")).text();
+const re = /<a href="(https?:\/\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/g;
+let m; const free = [];
+while ((m = re.exec(h)) !== null) {
+  const txt = m[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  const b = txt.match(/^(.*?)\s+(Free|Freemium|Paid)$/);
+  if (b && b[2] !== "Paid") free.push({ name: b[1], url: m[1], badge: b[2] });
+}
+// 67 entries: 31 Free + 36 Freemium. 7 Paid excluded.
+```
+
+**Free / Freemium entries only (67), by category:**
+
+- **Web References** - 60fps, Inspora, Collect UI, UI Land, Awwwards
+- **Images** - Lummi, Cosmos, Imageory, Pixabay
+- **Components** - 21st.dev, shadcn/ui, HeroUI, Origin UI, aMicro Loaders, TUFFUI, Libraries.dev, Details
+- **Icons** - Phosphor Icons, Hugeicons, Feather Icons, Pixelarticons
+- **Fonts** - Google Fonts, Fontshare
+- **Motion** - Motion In Design, LottieFiles, Transitions.dev, GSAP, Motion, Metalforge
+- **Design Systems** - getdesign.md, components.design, Design Systems Brasileiros, Design Systems Directory
+- **Agent Skills** - Anti Web Slop, Revenue Centric Design, Pocket Design MCP, /grill-me, /caveman
+- **AI Tools** - Weave, Grokbot, Cursor, Agentes.chat
+- **Design Tools** - FigJam, Figma, Elyx
+- **3D Tools** - Spline, Blender, Three.js, Tripo3D
+- **Web Utility** - SVGOMG, OpenShaders, Coolors
+- **Video & Capture** - OpenScreen, NVIDIA Broadcast, OBS Studio, UltraMock, DaVinci Resolve
+- **Infrastructure** - Vercel, Supabase, Sanity
+- **Audio** - ElevenLabs, Pixabay Sound Effects
+- **Metrics** - Mixpanel, Himetrica, PostHog
+- **Organization** - Notion, Linear
+
+Excluded (Paid): Mobbin, MJ Pro, MyFonts, Plau, PintassilgoPrints, Screen Studio, Hostinger.
+
+Use it for: the five categories the other seven do not cover - **Agent Skills, Design Systems, Audio, Metrics, Infrastructure** - and as a second opinion on free tools. It overlaps Designeer heavily (60fps, Awwwards, shadcn, 21st.dev, Phosphor, Fontshare, Motion, Transitions.dev, GSAP, Three.js, SVGOMG, Figma), so check Designeer first for those. Same rule as Designeer: it points at things; check the licence of the thing itself before shipping it.
+
 ## Build order
 
 Work in this order. Skipping to step 4 is why the result looks generic.
@@ -199,7 +240,7 @@ Work in this order. Skipping to step 4 is why the result looks generic.
 3. **Structure.** Assemble the page from EasyUI. Nav, hero layout, features, pricing, footer.
 4. **Motion.** Add the micro-interactions from Amicro, and pull in a Bencho block for the one distinctive interaction.
 5. **Personality.** One Piixpal character or one Stick It Up sticker, where it earns its place. Then stop - two is a theme, three is noise.
-6. **More tools.** Designeer, if the job needs a font, an icon set, a shader, or an asset pipeline.
+6. **More tools.** Designeer first, Cesaro Resources second, if the job needs a font, an icon set, a shader, an agent skill, an audio bed, or an asset pipeline.
 7. **Gates.** Run the five gates below. Then verify in a browser.
 
 ## The five gates
@@ -295,7 +336,7 @@ When you derive the direction from a Refero style, keep the whole thing - the do
 
 ### Gate 5 - Delivery - licences and verification
 
-**Licences.** EasyUI, Amicro, Piixpal, Bencho and Stick It Up are MIT - read the repo `LICENSE` to confirm the version you vendored. Designeer is a catalogue of pointers: check the licence of each thing it points at. Refero DESIGN.md files describe real brands - the fonts are named with a **free substitute**; use the substitute, not the original. Do not ship a brand's logo, and do not hotlink their imagery. Use assets you own or CC0.
+**Licences.** EasyUI, Amicro, Piixpal, Bencho and Stick It Up are MIT - read the repo `LICENSE` to confirm the version you vendored. Designeer and Cesaro Resources are catalogues of pointers: check the licence of each thing they point at (Cesaro labels Free / Freemium / Paid - "Freemium" still has limits, read them). Refero DESIGN.md files describe real brands - the fonts are named with a **free substitute**; use the substitute, not the original. Do not ship a brand's logo, and do not hotlink their imagery. Use assets you own or CC0.
 
 **Verification.** Before saying the work is done:
 
@@ -352,7 +393,7 @@ That is a premium page, and every piece of it came from a source.
 
 ## Common mistakes
 
-- **Hand-rolling a component that exists.** Check the routing table first. Every one of these seven has the thing.
+- **Hand-rolling a component that exists.** Check the routing table first. Every one of these eight has the thing.
 - **Scraping rendered HTML** when `llms.txt`, `.md`, or `registry.json` exists.
 - **Copying a style's colours without its rules.** A palette without its do's and don'ts produces exactly the generic result you were trying to avoid.
 - **Treating "DESIGN.md" as a palette dump.** The role column and the prohibitions are the value.
