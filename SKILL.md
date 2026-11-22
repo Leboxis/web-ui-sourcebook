@@ -1,11 +1,11 @@
 ---
 name: web-ui-sourcebook
-description: Use when building or changing web UI - landing page, hero, pricing table, dashboard, form, modal, toast, loader, button, animation, micro-interaction, color palette, typography, spacing, or a "make it feel alive / premium / not templated" brief. A sourcebook of eight vetted open-source catalogues and libraries (EasyUI, Refero DESIGN.md, Piixpal, Stick It Up, Bencho, Amicro, Designeer, Cesaro Resources) for finding existing components, motion and design direction instead of hand-rolling them. Triggers on "component library", "micro-interaction", "animation", "motion", "hero section", "stickers", "pixel art", "design system", "DESIGN.md", "landing page", "animated", "polish", "delight".
+description: Use when building or changing web UI - landing page, hero, pricing table, dashboard, form, modal, toast, loader, button, animation, micro-interaction, color palette, typography, spacing, or a "make it feel alive / premium / not templated" brief. A sourcebook of nine vetted open-source catalogues and libraries (EasyUI, Refero DESIGN.md, Piixpal, Stick It Up, Bencho, Amicro, Oxyn, Designeer, Cesaro Resources) for finding existing components, motion and design direction instead of hand-rolling them. Triggers on "component library", "micro-interaction", "animation", "motion", "hero section", "stickers", "pixel art", "design system", "DESIGN.md", "landing page", "animated", "polish", "delight".
 ---
 
 # Web UI Sourcebook
 
-Eight sources cover almost every web UI need. This skill is the routing layer over them, plus the five gates that get skipped.
+Nine sources cover almost every web UI need. This skill is the routing layer over them, plus the five gates that get skipped.
 
 **Core principle: copy before you build. Borrow the direction before you pick the palette. Every visual decision has a source; every animation has a budget.**
 
@@ -18,13 +18,14 @@ The failure mode this exists to prevent: an agent writes its own accordion, inve
 | Product UI: nav, data table, command menu, form, modal, chart, auth card, pricing | **EasyUI** | 134 production React components, copy-paste via shadcn, tokens included |
 | One interaction no library covers (audio trim, option wheel, magnetic letters, crumple receipt) | **Bencho** | 168 live blocks, most ship full source, sorted by gesture |
 | Micro-motion vocabulary: loader, shape morph, text effect, 3D card, dither chart | **Amicro** | 226 components, MIT, shadcn registry, GPU-safe defaults |
+| A loader that names the waiting state - reading, editing, searching, tool call, streaming | **Oxyn** | 62 animated React loaders, one self-contained shadcn file each, MIT |
 | A pixel character that lives on the page, a shader background, a whole hero | **Piixpal** | 300+ components, zero dependency, one script tag, MIT |
 | A brand moment: sticker on a hero, empty state, 404, card corner | **Stick It Up** | 65 hand-drawn SVG stickers with 3D peel physics, npm |
 | Colors, type scale, spacing, radius, do/don't from a real product | **Refero Styles** | 2000+ generated DESIGN.md, ready to paste as CSS vars |
 | Where to find other tools, fonts, galleries, icons, portfolios | **Designeer** | 693 curated listings, every page has a `.md` twin |
 | Agent skills, design systems, audio, metrics, infra, or a 2nd opinion on free tools | **Cesaro Resources** | 67 free/freemium picks across 18 categories, incl. the gaps Designeer leaves |
 
-Two sources answer "what does this look like" (Refero, Designeer). Two are indexes of other things (Designeer, Cesaro). Four answer "what do I ship" (the rest). Use them in that order - direction, then implementation.
+Two sources answer "what does this look like" (Refero, Designeer). Two are indexes of other things (Designeer, Cesaro). Five answer "what do I ship" (the rest). Use them in that order - direction, then implementation.
 
 ## Fetch machine-readable content first
 
@@ -36,6 +37,8 @@ Never scrape rendered HTML when a machine-readable endpoint exists. These are al
 | Bencho | `https://bencho.dev/llms.txt` | All 168 blocks with one-line descriptions |
 | Amicro | `https://amicro.dev/llms.txt` | Component index by category |
 | Amicro (full) | `https://amicro.vercel.app/llms-full.txt` | All 226 components, one per section |
+| Oxyn | `https://oxyn.space/llms.txt` | All 62 loaders with the state each one means + install slugs |
+| Oxyn (full) | `https://oxyn.space/llms-full.txt` | Install command, usage and props for every loader |
 | Piixpal | `https://piixpal.dvkk.dev/llms.txt` | Install lines + rules + 137 UI components |
 | Piixpal (full) | `https://piixpal.dvkk.dev/llms-full.txt` | UI components by section + 76 heroes + 121 characters |
 | Stick It Up | `https://stickitupx.com/llms.txt` | Install, props, all 65 sticker names |
@@ -58,7 +61,7 @@ const md = html
 
 Get the uuid from the grid at `styles.refero.design` (the search box filters by brand, style, color, font, or category) or from `styles.refero.design/ai-agents/design-md-examples`. Each extracted DESIGN.md is 17-26 KB.
 
-## The eight sources
+## The nine sources
 
 ### EasyUI - `easyui.site`
 React + Tailwind + Framer Motion. 134 components. Copy-paste ownership, zero configuration.
@@ -182,6 +185,21 @@ Its defaults are a good baseline and worth matching elsewhere: easing `[0.16, 1,
 
 Use it for: motion vocabulary. When you know the effect you want and need it correct on the first try.
 
+### Oxyn - `oxyn.space`
+62 animated React loaders (56 single states + 6 group components), drawn on a canvas and shipped as one self-contained file per loader. MIT, React only - each file imports just `react` and starts with `"use client"`.
+
+```bash
+npx shadcn@latest add https://oxyn.space/r/dot-think.json
+```
+
+Full registry index: `https://oxyn.space/r/registry.json`. Assistants can also query `https://oxyn.space/mcp` (`search_loaders`, `get_loader`).
+
+The point is the vocabulary: each loader says what the agent is doing - `dot-read` reading a file, `square-edit` editing one, `bar-write` writing output, `arc-search` searching, `bar-stream` streaming a command, `circle-await` waiting on approval, `dot-parallel` parallel tool calls. Each row also has a group component whose `animation` prop morphs between states (`dot-globe`, `dot-square`, `dot-circle`, `noise-rings`, `arc-rings`, `bar-ring`).
+
+Accessible by default: `role="status"` plus a `label` prop, and motion holds still under `prefers-reduced-motion`. Not for determinate progress bars, skeletons, or Vue/Svelte/HTML.
+
+Use it for: the thinking state. One loader that names the wait beats a generic spinner.
+
 ### Designeer - `designeer.xyz`
 A hand-reviewed catalogue: 693 listings in four collections plus 180 Finds (visual work from X and the web, credited to its maker). Editorial - inclusion cannot be bought, paid placements are labelled.
 
@@ -238,7 +256,7 @@ Work in this order. Skipping to step 4 is why the result looks generic.
 1. **Direction.** Pick a style in Refero that matches the product's mood. Extract its DESIGN.md. Save it as `DESIGN.md` at the repo root.
 2. **Foundations.** Turn the DESIGN.md tokens into CSS custom properties and a Tailwind v4 `@theme` block. Nothing gets a raw hex after this step.
 3. **Structure.** Assemble the page from EasyUI. Nav, hero layout, features, pricing, footer.
-4. **Motion.** Add the micro-interactions from Amicro, and pull in a Bencho block for the one distinctive interaction.
+4. **Motion.** Add the micro-interactions from Amicro, name the waiting state with an Oxyn loader, and pull in a Bencho block for the one distinctive interaction.
 5. **Personality.** One Piixpal character or one Stick It Up sticker, where it earns its place. Then stop - two is a theme, three is noise.
 6. **More tools.** Designeer first, Cesaro Resources second, if the job needs a font, an icon set, a shader, an agent skill, an audio bed, or an asset pipeline.
 7. **Gates.** Run the five gates below. Then verify in a browser.
@@ -336,7 +354,7 @@ When you derive the direction from a Refero style, keep the whole thing - the do
 
 ### Gate 5 - Delivery - licences and verification
 
-**Licences.** EasyUI, Amicro, Piixpal, Bencho and Stick It Up are MIT - read the repo `LICENSE` to confirm the version you vendored. Designeer and Cesaro Resources are catalogues of pointers: check the licence of each thing they point at (Cesaro labels Free / Freemium / Paid - "Freemium" still has limits, read them). Refero DESIGN.md files describe real brands - the fonts are named with a **free substitute**; use the substitute, not the original. Do not ship a brand's logo, and do not hotlink their imagery. Use assets you own or CC0.
+**Licences.** EasyUI, Amicro, Oxyn, Piixpal, Bencho and Stick It Up are MIT - read the repo `LICENSE` to confirm the version you vendored. Designeer and Cesaro Resources are catalogues of pointers: check the licence of each thing they point at (Cesaro labels Free / Freemium / Paid - "Freemium" still has limits, read them). Refero DESIGN.md files describe real brands - the fonts are named with a **free substitute**; use the substitute, not the original. Do not ship a brand's logo, and do not hotlink their imagery. Use assets you own or CC0.
 
 **Verification.** Before saying the work is done:
 
@@ -393,7 +411,7 @@ That is a premium page, and every piece of it came from a source.
 
 ## Common mistakes
 
-- **Hand-rolling a component that exists.** Check the routing table first. Every one of these eight has the thing.
+- **Hand-rolling a component that exists.** Check the routing table first. Every one of these nine has the thing.
 - **Scraping rendered HTML** when `llms.txt`, `.md`, or `registry.json` exists.
 - **Copying a style's colours without its rules.** A palette without its do's and don'ts produces exactly the generic result you were trying to avoid.
 - **Treating "DESIGN.md" as a palette dump.** The role column and the prohibitions are the value.
